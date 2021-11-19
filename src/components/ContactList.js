@@ -1,36 +1,27 @@
-import React from "react";
-import PropTypes from "prop-types";
+import React, { useEffect } from "react";
 import style from "./contacts.module.css";
-import { connect } from 'react-redux';
-import { contactDelete } from '../redux/actions';
+import { useSelector, useDispatch } from 'react-redux';
+import { getThunkData, deleteThunkData } from '../redux/operations';
+import { getFilteredContacts } from '../redux/selectors';
 
 
-function ContactList({ contacts, filter, handleDelete }) {
+export default function ContactList() {
 
-  const filterContacts = () => { 
-    return contacts.filter((el) => {
-      const array = el.name.toLowerCase().split(" ");
+  const dispatch = useDispatch();
+  const filterContacts = useSelector(getFilteredContacts);
 
-      for (let i = 0; i < array.length; i++) {
-        if (array[i].toLowerCase().match(new RegExp(`^${filter}`)) !== null) {
-          return true;
-        }
-      }
-      return false;
-    });
-  };
-
+  useEffect(() => dispatch(getThunkData(), [dispatch]));
 
   return (
       <ul className={style.list}>
-        {filterContacts().map((el) => (
+      {filterContacts.map((el) => (
           <li className={style.listItem} key={el.id}>
             {el.name}: {el.number}
             <button
               type="button"
               className={style.btnDelete}
               id={el.id}
-              onClick={handleDelete}
+              onClick={()=>dispatch(deleteThunkData(el.id))}
             >
               Delete
             </button>
@@ -39,21 +30,3 @@ function ContactList({ contacts, filter, handleDelete }) {
       </ul>
     );
 }
-
-const stateProps = state => {
-    return {
-        contacts: state?.contacts ?? [],
-        filter:state?.filter??""
-    }
-};
-
-const dispatchProps = dispatch => ({
-  handleDelete: e => dispatch(contactDelete(e.target.id))
-});
-
-export default connect(stateProps,dispatchProps)(ContactList);
-
-ContactList.propTypes = {
-  contacts: PropTypes.array.isRequired,
-  handleDelete: PropTypes.func.isRequired,
-};

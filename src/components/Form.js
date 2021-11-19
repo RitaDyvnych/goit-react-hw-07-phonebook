@@ -1,13 +1,15 @@
 import React, { useState } from "react";
-import PropTypes from "prop-types";
-import style from "./contacts.module.css";
 import { v4 as uuidv4 } from "uuid";
-import { connect } from 'react-redux';
-import { contactSubmit } from '../redux/actions';
+import { useDispatch, useSelector } from 'react-redux';
+import { addThunkData } from '../redux/operations';
+import { getContact } from '../redux/selectors';
+import style from "./contacts.module.css";
 
-function Form({handleSubmit}) {
+export default function Form() {
   const [name, setName] = useState("");
   const [number, setNumber] = useState("");
+  const contacts = useSelector(getContact);
+  const dispatch = useDispatch();
 
   const inputNameId = uuidv4();
   const inputNumberId = uuidv4();
@@ -19,20 +21,27 @@ function Form({handleSubmit}) {
       setNumber(e.target.value);
     }
   };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (contacts.find(contact => contact.name.toLowerCase() === name.toLowerCase())) {
+      alert(`${name} is already in contacts.`);
+    } else {
+      dispatch(addThunkData({ name, number, inputNameId }));
+      setName("");
+      setNumber("");
+    }
+  };
+
   return (
       <>
         <form
           className={style.form}
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleSubmit([name, number]);
-            setName("");
-            setNumber("");
-          }}
+          onSubmit={handleSubmit}
         >
           <label htmlFor={inputNameId}>Name</label>
           <input
-            className={style.input}
+          className={style.input}
             id={inputNameId}
             value={name}
             autoComplete="off"
@@ -46,8 +55,8 @@ function Form({handleSubmit}) {
           <label htmlFor={inputNumberId}>Number</label>
           <input
             className={style.input}
-            id={inputNumberId}
-            value={number}
+          value={number}
+          id={inputNumberId}
             autoComplete="off"
             type="tel"
             name="number"
@@ -64,13 +73,3 @@ function Form({handleSubmit}) {
     );
 
 }
-
-const dispatchProps = dispatch => ({
-  handleSubmit: data => dispatch(contactSubmit(data))
-});
-
-export default connect(null,dispatchProps)(Form);
-
-Form.propTypes = {
-  handleSubmit: PropTypes.func.isRequired,
-};
