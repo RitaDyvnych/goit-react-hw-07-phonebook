@@ -7,7 +7,6 @@ import { contactSubmit, changeFilter, contactDelete } from './actions';
 function addContact(state = {}, action) {
  
   if (!state.contacts.find((el) => el.name === action.payload[0])) {
-    // console.log(action.payload);
     const data = [...state.contacts, { name: action.payload[0], number: action.payload[1], id: uuidv4() }];
     localStorage.setItem('contacts', JSON.stringify(data));
     return { ...state, contacts: data };
