@@ -10,7 +10,9 @@ export default function ContactList() {
   const dispatch = useDispatch();
   const filterContacts = useSelector(getFilteredContacts);
 
-  useEffect(() => dispatch(getThunkData(), [dispatch]));
+  useEffect(() => {
+    dispatch(getThunkData());
+  }, [dispatch]);
 
   return (
       <ul className={style.list}>

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { v4 as uuidv4 } from "uuid";
 import { useDispatch, useSelector } from 'react-redux';
 import { addThunkData } from '../redux/operations';
 import { getContact } from '../redux/selectors';
@@ -10,9 +9,7 @@ export default function Form() {
   const [number, setNumber] = useState("");
   const contacts = useSelector(getContact);
   const dispatch = useDispatch();
-
-  const inputNameId = uuidv4();
-  const inputNumberId = uuidv4();
+  
   
   const handleChangeInput = (e) => {
    if (e.target.name === 'name') {
@@ -27,7 +24,7 @@ export default function Form() {
     if (contacts.find(contact => contact.name.toLowerCase() === name.toLowerCase())) {
       alert(`${name} is already in contacts.`);
     } else {
-      dispatch(addThunkData({ name, number, inputNameId }));
+      dispatch(addThunkData({ name, number }));
       setName("");
       setNumber("");
     }
@@ -39,10 +36,9 @@ export default function Form() {
           className={style.form}
           onSubmit={handleSubmit}
         >
-          <label htmlFor={inputNameId}>Name</label>
+          <label>Name</label>
           <input
           className={style.input}
-            id={inputNameId}
             value={name}
             autoComplete="off"
             type="text"
@@ -52,11 +48,10 @@ export default function Form() {
             required
             onChange={handleChangeInput}
           />
-          <label htmlFor={inputNumberId}>Number</label>
+          <label>Number</label>
           <input
             className={style.input}
           value={number}
-          id={inputNumberId}
             autoComplete="off"
             type="tel"
             name="number"
